@@ -1,0 +1,3 @@
+rootProject.name = 'jaxws'
+include 'client'
+include 'server'
