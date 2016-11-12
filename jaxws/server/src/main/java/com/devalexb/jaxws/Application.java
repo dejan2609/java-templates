@@ -1,6 +1,6 @@
-package com.devalexb;
+package com.devalexb.jaxws;
 
-import com.devalexb.config.AppConfig;
+import com.devalexb.jaxws.config.AppConfig;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 

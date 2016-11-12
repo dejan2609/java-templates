@@ -1,6 +1,6 @@
-package com.devalexb.service;
+package com.devalexb.jaxws.service;
 
-import com.devalexb.domain.HelloWorld;
+import com.devalexb.jaxws.domain.HelloWorld;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

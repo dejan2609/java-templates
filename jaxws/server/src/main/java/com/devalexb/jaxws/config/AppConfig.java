@@ -1,6 +1,6 @@
-package com.devalexb.config;
+package com.devalexb.jaxws.config;
 
-import com.devalexb.domain.HelloWorld;
+import com.devalexb.jaxws.domain.HelloWorld;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
