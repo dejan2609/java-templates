@@ -1,0 +1,107 @@
+import org.apache.tools.ant.filters.ReplaceTokens
+
+group 'com.deavalexb.helloworld'
+version '0.0.1'
+
+apply from: "$rootDir/gradle/loadBuildConfig.gradle"
+apply plugin: 'java'
+apply plugin: 'idea'
+apply plugin: 'war'
+apply plugin: 'spring-boot'
+apply plugin: "com.bmuschko.cargo"
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+buildscript {
+    repositories {
+        mavenCentral()
+        jcenter()
+    }
+
+    dependencies {
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:1.4.1.RELEASE")
+        classpath 'com.bmuschko:gradle-cargo-plugin:2.2.3'
+    }
+}
+
+task wrapper(type: Wrapper) {
+    gradleVersion = '3.1'
+    distributionUrl = "https://services.gradle.org/distributions/gradle-$gradleVersion-all.zip"
+}
+
+repositories {
+    mavenCentral()
+    jcenter()
+}
+
+war {
+    baseName = 'gradle-env-and-deploy'
+}
+
+dependencies {
+    /*
+        Spring
+     */
+    compile 'org.springframework.boot:spring-boot-starter-web'
+
+
+    /*
+        Tomcat
+     */
+    providedRuntime 'org.springframework.boot:spring-boot-starter-tomcat'
+
+    /*
+        Tests
+     */
+    testCompile 'org.springframework.boot:spring-boot-starter-test'
+    testCompile 'junit:junit:4.12'
+}
+
+task replaceApplicationPropsDev << {
+    replaceApplicationProps(sourceSets.main.resources.srcDirs[0])
+}
+
+war.dependsOn replaceApplicationPropsDev
+
+/*
+    Replace application properties
+ */
+def replaceApplicationProps(destinationDir) {
+    copy {
+        def props = new Properties();
+        FileInputStream is = new FileInputStream("$rootDir/configuration/$config.app.compilePropertyFile");
+        InputStreamReader reader = new InputStreamReader(is, "UTF-8");
+
+        props.load(reader);
+
+        from sourceSets.main.resources.srcDirs[0]
+        into "$buildDir/tmp"
+
+        include "application.properties"
+        filter(ReplaceTokens, tokens: props)
+    }
+
+    copy {
+        from "$buildDir/tmp"
+        into destinationDir
+
+        include "application.properties"
+    }
+}
+
+cargo {
+    containerId = 'tomcat8x'
+    port = config.server.port
+
+    deployable {
+        file = file("$buildDir/libs/${war.archiveName}")
+        context = config.server.context
+    }
+
+    remote {
+        hostname = config.server.hostname
+        username = config.server.username
+        password = config.server.password
+    }
+}
