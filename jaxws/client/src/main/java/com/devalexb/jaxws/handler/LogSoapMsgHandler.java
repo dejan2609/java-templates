@@ -13,6 +13,8 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Set;
 
+import static javax.xml.ws.handler.MessageContext.*;
+
 /**
  * @author Alex Bogatikov
  *         Created on 13/11/2016.
@@ -39,7 +41,7 @@ public class LogSoapMsgHandler implements SOAPHandler<SOAPMessageContext> {
     public boolean handleMessage(SOAPMessageContext context) {
         try {
             //if this is a request, true for outbound messages, false for inbound
-            Boolean isRequest = (Boolean) context.get(MessageContext.MESSAGE_OUTBOUND_PROPERTY);
+            Boolean isRequest = (Boolean) context.get(MESSAGE_OUTBOUND_PROPERTY);
             String fileNamePostfix = format.format(new Date());
 
             if (isRequest) {
