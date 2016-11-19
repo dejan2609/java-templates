@@ -4,7 +4,7 @@ def today = new Date()
 logger.quiet "Loading configuration for environment $env. ($today)"
 
 def configFile = file("$rootDir/gradle/config/buildConfig.groovy")
-def parsedConfig = new ConfigSlurper(env).parse(configFile.toURL())
+def parsedConfig = new ConfigSlurper(env).parse(configFile.toURI().toURL())
 
 def parsedCompileProps = new Properties()
 parsedCompileProps.load(new FileInputStream("$rootDir/configuration/$parsedConfig.app.compilePropertyFile"))
