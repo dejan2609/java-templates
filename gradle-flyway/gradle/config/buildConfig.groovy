@@ -1,11 +1,9 @@
 environments {
     dev {
         server {
-            hostname = 'localhost'
-            port = 8080
-            context = 'devalexb'
-            username = 'tomcat'
-            password = 'tomcat'
+            url = 'jdbc:postgresql://localhost:32769/flyway'
+            user = 'postgres'
+            password = 'postgres'
         }
 
         app {
@@ -15,11 +13,9 @@ environments {
 
     interserv {
         server {
-            hostname = 'etalon.devalexb.com'
-            port = 8080
-            context = 'devalexb'
-            username = 'tomcat'
-            password = 'tomcat'
+            url = 'jdbc:postgresql://localhost:5432/flyway'
+            user = 'postgres'
+            password = 'postgres'
         }
 
         app {

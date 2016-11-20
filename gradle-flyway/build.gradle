@@ -7,6 +7,7 @@ apply from: "$rootDir/gradle/loadBuildConfig.gradle"
 apply plugin: 'java'
 apply plugin: 'idea'
 apply plugin: 'spring-boot'
+apply plugin: "org.flywaydb.flyway"
 
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
@@ -15,10 +16,15 @@ buildscript {
     repositories {
         mavenCentral()
         jcenter()
+        maven {
+            url "https://plugins.gradle.org/m2/"
+        }
     }
 
     dependencies {
         classpath("org.springframework.boot:spring-boot-gradle-plugin:1.4.1.RELEASE")
+        classpath "gradle.plugin.com.boxfuse.client:flyway-release:4.0.3"
+        classpath "org.postgresql:postgresql:9.4.1212"
     }
 }
 
@@ -41,6 +47,13 @@ dependencies {
         Spring
      */
     compile 'org.springframework.boot:spring-boot-starter-web'
+    compile 'org.springframework.boot:spring-boot-starter-jdbc'
+
+    /*
+        database
+    */
+    compile 'com.zaxxer:HikariCP:2.4.7'
+    compile 'org.postgresql:postgresql:9.4.1212'
 
     /*
         Tests
@@ -79,6 +92,19 @@ def replaceApplicationProps(destinationDir) {
         include "application.properties"
         include "log4j.properties"
     }
+}
+
+flyway {
+    url = config.server.url
+    user = config.server.user
+    password = config.server.password
+
+    sqlMigrationPrefix = 'FLY_'
+
+    validateOnMigrate = true
+    baselineOnMigrate = true
+    outOfOrder = false
+    baselineVersion = '0.0.1'
 }
 
 processResources.dependsOn replaceApplicationPropsDev
