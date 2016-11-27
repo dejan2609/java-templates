@@ -1,0 +1,85 @@
+import org.apache.tools.ant.filters.ReplaceTokens
+
+group 'com.deavalexb.helloworld'
+version '0.0.1'
+
+apply from: "$rootDir/gradle/loadBuildConfig.gradle"
+apply plugin: 'java'
+apply plugin: 'idea'
+apply plugin: 'spring-boot'
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+buildscript {
+    repositories {
+        mavenCentral()
+        jcenter()
+    }
+
+    dependencies {
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:1.4.1.RELEASE")
+    }
+}
+
+task wrapper(type: Wrapper) {
+    gradleVersion = '3.1'
+    distributionUrl = "https://services.gradle.org/distributions/gradle-$gradleVersion-all.zip"
+}
+
+repositories {
+    mavenCentral()
+    jcenter()
+}
+
+dependencies {
+    /*
+        Spring
+     */
+    compile 'org.springframework.boot:spring-boot-starter-web'
+
+    /*
+        Logs
+     */
+    compile 'log4j:log4j:1.2.17'
+
+    /*
+        Tests
+     */
+    testCompile 'org.springframework.boot:spring-boot-starter-test'
+    testCompile 'junit:junit:4.12'
+}
+
+task replaceApplicationPropsDev << {
+    replaceApplicationProps(sourceSets.main.resources.srcDirs[0])
+}
+
+/*
+    Replace application properties
+ */
+def replaceApplicationProps(destinationDir) {
+    copy {
+        def props = new Properties();
+        FileInputStream is = new FileInputStream("$rootDir/configuration/$config.app.compilePropertyFile");
+        InputStreamReader reader = new InputStreamReader(is, "UTF-8");
+
+        props.load(reader);
+
+        from sourceSets.main.resources.srcDirs[0]
+        into "$buildDir/tmp"
+
+        include "application.properties"
+        include "log4j.properties"
+        filter(ReplaceTokens, tokens: props)
+    }
+
+    copy {
+        from "$buildDir/tmp"
+        into destinationDir
+
+        include "application.properties"
+        include "log4j.properties"
+    }
+}
+
+processResources.dependsOn replaceApplicationPropsDev
